@@ -1,3 +1,6 @@
-# Northcoders News API
+Adding environment variables
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+This repo requires two files to be created(file contents in brackets):
+
+.env.development    (PGDATABASE=nc_news)
+.env.test           (PGDATABASE=nc_news_test)
