@@ -74,8 +74,7 @@ describe('GET /api/articles/:article_id', () => {
         return request(app)
         .get("/api/articles/notValid")
         .expect(400)
-        .then(({ body }) => {   
-            console.log(body)      
+        .then(({ body }) => {        
             expect(body.message).toBe("invalid article id")
         
         })
@@ -85,8 +84,7 @@ describe('GET /api/articles/:article_id', () => {
         return request(app)
         .get("/api/articles/9999")
         .expect(404)
-        .then(({ body }) => {   
-            console.log(body)      
+        .then(({ body }) => {        
             expect(body.message).toBe("article id not found")
         
         })

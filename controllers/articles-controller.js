@@ -6,7 +6,7 @@ exports.getArticleById = async (req, res, next) => {
         const article = await fetchArticleById(article_id)
         return res.status(200).send({ article })
     } catch (err) {
-        console.log(err)
+        
         next(err)
     }
 }
