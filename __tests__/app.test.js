@@ -3,6 +3,7 @@ const request = require("supertest")
 const db = require("../db/connection")
 const data = require("../db/data/test-data/index.js")
 const seed = require("../db/seeds/seed.js")
+const endpoints = require("../endpoints.json")
 
 beforeEach(() => {
     return seed(data)
@@ -11,7 +12,7 @@ afterAll(() => {
     db.end
 })
 
-describe('Invalid api path', () => {
+describe('404 Invalid api path', () => {
     test('should should return a status code of 404 if path is invalid', () => {
         return request(app)
         .get("/api/invalidApi")
@@ -22,6 +23,17 @@ describe('Invalid api path', () => {
         })
     })
 })
+
+describe('GET /api', () => {
+    test('should return a status code of 200 and api details ', () => {
+        return request(app)
+        .get("/api")
+        .expect(200)
+        .then(({ body }) => {
+            expect(body.endpoints).toEqual(endpoints)
+        })
+    });
+});
 
 describe('GET /api/topics', () => {
     test('should return a status code of 200 and topics array on successful request', () => {
