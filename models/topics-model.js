@@ -1,4 +1,3 @@
-
 const db = require("../db/connection")
 
 exports.fetchTopics = async (req, res, next) => {
