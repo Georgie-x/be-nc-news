@@ -90,3 +90,26 @@ describe('GET /api/articles/:article_id', () => {
         })
     })
 })
+
+
+
+
+
+
+describe('GET /api/articles/:article_id/comments', () => {
+    test('should return a status code of 200 and an array of comments for an article', () => {
+        return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {  
+            body.forEach((comment) => {
+            expect(typeof comment.comment_id).toBe("number")
+            expect(typeof comment.votes).toBe("number")
+            expect(typeof comment.created_at).toBe("string")
+            expect(typeof comment.author).toBe("string")
+            expect(typeof comment.body).toBe("string")
+            expect(typeof comment.article_id).toBe("number")
+            })  
+    })
+    })
+})
