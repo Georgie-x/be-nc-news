@@ -5,6 +5,7 @@ const data = require("../db/data/test-data/index.js")
 const seed = require("../db/seeds/seed.js")
 const endpoints = require("../endpoints.json")
 
+
 beforeEach(() => {
     return seed(data)
 })
@@ -13,7 +14,7 @@ afterAll(() => {
 })
 
 describe('404 Invalid api path', () => {
-    test('should should return a status code of 404 if path is invalid', () => {
+    test('should return a status code of 404 if path is invalid', () => {
         return request(app)
         .get("/api/invalidApi")
         .expect(404)
@@ -58,14 +59,14 @@ describe('GET /api/articles/:article_id', () => {
         .get("/api/articles/1")
         .expect(200)
         .then(({ body }) => {         
-            expect(typeof body.article[0].author).toBe("string")
-            expect(typeof body.article[0].title).toBe("string")
-            expect(typeof body.article[0].article_id).toBe("number")
-            expect(typeof body.article[0].body).toBe("string")
-            expect(typeof body.article[0].topic).toBe("string")
-            expect(typeof body.article[0].created_at).toBe("string")
-            expect(typeof body.article[0].votes).toBe("number")
-            expect(typeof body.article[0].article_img_url).toBe("string")
+            expect(typeof body.article.author).toBe("string")
+            expect(typeof body.article.title).toBe("string")
+            expect(typeof body.article.article_id).toBe("number")
+            expect(typeof body.article.body).toBe("string")
+            expect(typeof body.article.topic).toBe("string")
+            expect(typeof body.article.created_at).toBe("string")
+            expect(typeof body.article.votes).toBe("number")
+            expect(typeof body.article.article_img_url).toBe("string")
         
         })
     })
@@ -87,6 +88,29 @@ describe('GET /api/articles/:article_id', () => {
         .then(({ body }) => {        
             expect(body.message).toBe("article id not found")
         
+        })
+    })
+})
+
+describe('GET /api/articles', () => {
+    test('should return a status code of 200 and array of articles ordered by created_at', () => {
+        return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {  
+            expect(body.articles).toBeSortedBy('created_at', { descending: true })
+            expect(body.articles).toHaveLength(13)
+            body.articles.forEach((article) => {       
+            expect(typeof article.author).toBe("string")
+            expect(typeof article.title).toBe("string")
+            expect(typeof article.article_id).toBe("number")
+            expect(typeof article.topic).toBe("string")
+            expect(typeof article.created_at).toBe("string")
+            expect(typeof article.votes).toBe("number")
+            expect(typeof article.article_img_url).toBe("string")
+            expect(typeof article.comment_count).toBe("string")
+
+            })  
         })
     })
 })
