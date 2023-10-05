@@ -93,11 +93,13 @@ describe('GET /api/articles/:article_id', () => {
 })
 
 describe('GET /api/articles', () => {
-    test('should return a status code of 200 and array of articles', () => {
+    test('should return a status code of 200 and array of articles ordered by created_at', () => {
         return request(app)
         .get("/api/articles")
         .expect(200)
-        .then(({ body }) => {    
+        .then(({ body }) => {  
+            console.log(body)  
+            expect(body.articles).toBeSortedBy('created_at', { descending: true })
             body.articles.forEach((article) => {       
             expect(typeof article.author).toBe("string")
             expect(typeof article.title).toBe("string")
@@ -108,7 +110,7 @@ describe('GET /api/articles', () => {
             expect(typeof article.article_img_url).toBe("string")
             expect(typeof article.comment_count).toBe("string")
 
-        })  
+            })  
         })
     })
 })
