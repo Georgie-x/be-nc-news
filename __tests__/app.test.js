@@ -101,7 +101,9 @@ describe('GET /api/articles/:article_id/comments', () => {
         return request(app)
         .get("/api/articles/1/comments")
         .expect(200)
-        .then(({ body }) => {  
+        .then(({ body }) => { 
+            expect(body).toHaveLength(11)
+          
             body.forEach((comment) => {
             expect(typeof comment.comment_id).toBe("number")
             expect(typeof comment.votes).toBe("number")
