@@ -45,5 +45,5 @@ const fetchArticleComments = async (article_id) => {
 
 
 
-module.exports = {fetchArticleById, fetchArticleComments}
+module.exports = {fetchArticleById, fetchArticles, fetchArticleComments}
 

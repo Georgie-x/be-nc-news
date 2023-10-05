@@ -17,6 +17,7 @@ exports.getArticles = async (req, res, next) => {
     } catch (err) {
         next(err)
     }
+}
 
 exports.getArticleComments = async (req, res, next) => {
     try {
@@ -26,3 +27,4 @@ exports.getArticleComments = async (req, res, next) => {
        } catch (err) {
         next(err)
        }
+}

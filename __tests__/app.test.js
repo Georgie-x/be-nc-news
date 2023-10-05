@@ -113,6 +113,7 @@ describe('GET /api/articles', () => {
             })  
         })
     })
+})
 
 describe('GET /api/articles/:article_id/comments', () => {
     test('should return a status code of 200 and an array of comments for an article', () => {
