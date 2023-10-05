@@ -45,5 +45,20 @@ const fetchArticleComments = async (article_id) => {
 
 
 
-module.exports = {fetchArticleById, fetchArticles, fetchArticleComments}
 
+
+
+
+
+
+
+exports.insertComment = async (newComment)=> {
+    const query = `INSERT INTO comments(username, body)
+    VALUES ($1, $2)
+    RETURNING *`
+    const body = await db.query(query, [newComment.username, newComment.body])
+    return body.rows[0]
+    
+
+}
+module.exports = {fetchArticleById, fetchArticles, fetchArticleComments}

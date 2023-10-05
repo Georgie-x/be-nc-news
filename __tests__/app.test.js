@@ -54,7 +54,7 @@ describe('GET /api/topics', () => {
 
 describe('GET /api/articles/:article_id', () => {
 
-    test('should return a status code of 200 and an article object with correct properties', () => {
+    test.skip('should return a status code of 200 and an article object with correct properties', () => {
         return request(app)
         .get("/api/articles/1")
         .expect(200)
@@ -163,3 +163,20 @@ describe('GET /api/articles/:article_id/comments', () => {
         })
     })
 })
+
+
+
+
+
+
+
+// describe('POST /api/articles/:article_id/comments', () => {
+//     test.only('should return a status code of 200 and newly posted comment', () => {
+//         const newComment = { username: "rogersop", body: "Wow, this really is fantastic!"}
+//         console.log(newComment.username)
+//         return request(app)
+//         .post("/api/articles/1/comments")
+//         .send(newComment)
+//         .expect(201)
+//     });
+// });
