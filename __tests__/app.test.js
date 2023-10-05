@@ -99,6 +99,7 @@ describe('GET /api/articles', () => {
         .expect(200)
         .then(({ body }) => {  
             expect(body.articles).toBeSortedBy('created_at', { descending: true })
+            expect(body.articles).toHaveLength(13)
             body.articles.forEach((article) => {       
             expect(typeof article.author).toBe("string")
             expect(typeof article.title).toBe("string")
