@@ -10,13 +10,22 @@ const fetchArticleById = async (article_id) => {
     }        
 }
 
-
-
-
-
-
-
-
+const fetchArticles = async () => {
+    const query = `
+    SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count
+    FROM articles
+    LEFT JOIN comments
+    ON articles.article_id = comments.article_id
+    GROUP BY articles.author, articles.title, articles.article_id
+    ORDER BY articles.created_at DESC
+    `
+    const body = await db.query(query) 
+    if (body.rows.length === 0) {
+        return Promise.reject({ status: 404, message: "no articles found"})
+    } else {
+    return body.rows
+    }
+}
 
 const fetchArticleComments = async (article_id) => {
     const validArticle = await fetchArticleById(article_id)
@@ -37,3 +46,4 @@ const fetchArticleComments = async (article_id) => {
 
 
 module.exports = {fetchArticleById, fetchArticleComments}
+
