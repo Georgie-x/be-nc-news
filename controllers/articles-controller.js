@@ -18,7 +18,6 @@ exports.getArticles = async (req, res, next) => {
         next(err)
     }
 }
-
 exports.getArticleComments = async (req, res, next) => {
     try {
         const { article_id } = req.params
@@ -27,4 +26,4 @@ exports.getArticleComments = async (req, res, next) => {
        } catch (err) {
         next(err)
        }
-}
+    }
