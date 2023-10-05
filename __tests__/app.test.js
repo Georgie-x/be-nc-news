@@ -10,7 +10,7 @@ beforeEach(() => {
     return seed(data)
 })
 afterAll(() => {
-    db.end
+    db.end()
 })
 
 describe('404 Invalid api path', () => {
@@ -111,6 +111,54 @@ describe('GET /api/articles', () => {
             expect(typeof article.comment_count).toBe("string")
 
             })  
+        })
+    })
+
+describe('GET /api/articles/:article_id/comments', () => {
+    test('should return a status code of 200 and an array of comments for an article', () => {
+        return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => { 
+            expect(body).toHaveLength(11)
+            expect(body).toBeSortedBy('created_at', { descending: true })
+            body.forEach((comment) => {
+            expect(typeof comment.comment_id).toBe("number")
+            expect(typeof comment.votes).toBe("number")
+            expect(typeof comment.created_at).toBe("string")
+            expect(typeof comment.author).toBe("string")
+            expect(typeof comment.body).toBe("string")
+            expect(typeof comment.article_id).toBe("number")
+            })  
+        })
+    })
+
+    test('should return a status code of 404 and message if article_id is not found', () => {
+        return request(app)
+        .get("/api/articles/9999/comments")
+        .expect(404)
+        .then(({ body }) => {       
+            expect(body.message).toBe("article id not found")
+        
+        })
+    })
+    test('should return a status code of 400 and message if article_id is invalid', () => {
+        return request(app)
+        .get("/api/articles/notValid/comments")
+        .expect(400)
+        .then(({ body }) => {        
+            expect(body.message).toBe("invalid article id")
+        
+        })
+    })
+
+    test('should return a status code of 200 and message if no comments are found', () => {
+        return request(app)
+        .get("/api/articles/13/comments")
+        .expect(200)
+        .then(({ body }) => {        
+            expect(body.message).toBe("no comments found for this article")
+        
         })
     })
 })
