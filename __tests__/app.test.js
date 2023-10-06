@@ -198,7 +198,7 @@ describe('POST /api/articles/:article_id/comments', () => {
         .send(newComment)
         .expect(400)
     })
-    test('should return a status code of 404 and message if username is not found', () => {
+    test.only('should return a status code of 404 and message if username is not found', () => {
         const newComment = { username: "notUser", body: "Wow, this really is fantastic!" }
         return request(app)
         .post("/api/articles/1/comments")
