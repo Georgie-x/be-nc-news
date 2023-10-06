@@ -43,7 +43,28 @@ const fetchArticleComments = async (article_id) => {
     }
 }
 
+const insertComment = async (newComment, article_id) => {
+    const validArticle = await fetchArticleById(article_id)
+    if (validArticle.length === 0) {
+        return Promise.reject({ status: 404, message: "article id not found"})
+    } 
 
+    const { username, body } = newComment
 
-module.exports = {fetchArticleById, fetchArticles, fetchArticleComments}
+    const validUsername = await db.query(`SELECT username FROM users WHERE username = $1`, [username])
+       if (validUsername.rowCount === 0) {
+        return Promise.reject({ status: 404, message: "username not found"})
+    }
 
+    if (typeof body != "string") {
+        return Promise.reject({ status: 400, message: "comment not valid"})
+    }
+    
+    const query = `INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *`
+    
+    const result = await db.query(query, [username, body, article_id])
+    console.log(result.rows[0])
+    return result.rows[0]
+}
+
+module.exports = {fetchArticleById, fetchArticles, fetchArticleComments, insertComment}
