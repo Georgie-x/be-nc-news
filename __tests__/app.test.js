@@ -143,6 +143,7 @@ describe('GET /api/articles/:article_id/comments', () => {
         
         })
     })
+
     test('should return a status code of 400 and message if article_id is invalid', () => {
         return request(app)
         .get("/api/articles/notValid/comments")
@@ -170,3 +171,59 @@ describe('PATCH /api/articles/:article_id', () => {
     });
     
 });
+describe('POST /api/articles/:article_id/comments', () => {
+    test('should return a status code of 201 and newly posted comment', () => {
+        const newComment = { username: "rogersop", body: "Wow, this really is fantastic!" }
+        return request(app)
+        .post("/api/articles/13/comments")
+        .send(newComment)
+        .expect(201)
+        .then(({body}) => {
+            expect(body.comment).toMatchObject({
+                author: "rogersop",
+                body: expect.any(String),
+                article_id: 13,
+                comment_id: 19,
+                created_at: expect.any(String),
+                votes: 0
+            })
+        })
+    })
+
+    test('should return a status code of 404 and message if article_id is not found', () => {
+        const newComment = { username: "rogersop", body: "Wow, this really is fantastic!" }
+        return request(app)
+        .post("/api/articles/9999/comments")
+        .send(newComment)
+        .expect(404) 
+    })
+    test('should return a status code of 400 and message if article_id is invalid', () => {
+        const newComment = { username: "rogersop", body: "Wow, this really is fantastic!" }
+        return request(app)
+        .post("/api/articles/notValid/comments")
+        .send(newComment)
+        .expect(400)
+    })
+    test('should return a status code of 404 and message if username is not found', () => {
+        const newComment = { username: "notUser", body: "Wow, this really is fantastic!" }
+        return request(app)
+        .post("/api/articles/1/comments")
+        .send(newComment)
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe("username not found")
+        })
+    })
+    test('should return a status code of 400 and message if comment is invalid', () => {
+        const newComment = { username: "rogersop", body: 6 }
+        return request(app)
+        .post("/api/articles/1/comments")
+        .send(newComment)
+        .expect(400)
+    })
+
+
+
+
+
+}) 
