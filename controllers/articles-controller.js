@@ -36,7 +36,6 @@ exports.postComment = async (req, res, next) => {
         return res.status(201).send({ comment })
 
     } catch (err) {
-        console.log(err)
         next(err)
     }
 

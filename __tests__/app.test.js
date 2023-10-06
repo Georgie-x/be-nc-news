@@ -198,12 +198,15 @@ describe('POST /api/articles/:article_id/comments', () => {
         .send(newComment)
         .expect(400)
     })
-    test.only('should return a status code of 404 and message if username is not found', () => {
+    test('should return a status code of 404 and message if username is not found', () => {
         const newComment = { username: "notUser", body: "Wow, this really is fantastic!" }
         return request(app)
         .post("/api/articles/1/comments")
         .send(newComment)
         .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe("username not found")
+        })
     })
     test('should return a status code of 400 and message if comment is invalid', () => {
         const newComment = { username: "rogersop", body: 6 }
