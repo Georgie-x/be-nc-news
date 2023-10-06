@@ -165,7 +165,7 @@ describe('GET /api/articles/:article_id/comments', () => {
     })
 })
 
-describe.only('POST /api/articles/:article_id/comments', () => {
+describe('POST /api/articles/:article_id/comments', () => {
     test('should return a status code of 201 and newly posted comment', () => {
         const newComment = { username: "rogersop", body: "Wow, this really is fantastic!" }
         return request(app)
@@ -197,7 +197,6 @@ describe.only('POST /api/articles/:article_id/comments', () => {
         .post("/api/articles/notValid/comments")
         .send(newComment)
         .expect(400)
-
     })
     test('should return a status code of 404 and message if username is not found', () => {
         const newComment = { username: "notUser", body: "Wow, this really is fantastic!" }
@@ -205,9 +204,14 @@ describe.only('POST /api/articles/:article_id/comments', () => {
         .post("/api/articles/1/comments")
         .send(newComment)
         .expect(404)
-
     })
-
+    test('should return a status code of 400 and message if comment is invalid', () => {
+        const newComment = { username: "rogersop", body: 6 }
+        return request(app)
+        .post("/api/articles/1/comments")
+        .send(newComment)
+        .expect(400)
+    })
 
 
 
