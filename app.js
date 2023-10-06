@@ -18,6 +18,8 @@ app.get("/api/articles", getArticles)
 
 app.get("/api/articles/:article_id/comments", getArticleComments)
 
+app.post("/api/articles/:article_id/comments", postComment)
+
 
 
 

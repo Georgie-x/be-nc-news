@@ -4,7 +4,7 @@ exports.getArticleById = async (req, res, next) => {
     try {
         const { article_id } = req.params
         const article = await fetchArticleById(article_id)
-        return res.status(201).send({ article })
+        return res.status(200).send({ article })
     } catch (err) {   
         next(err)
     }
@@ -28,18 +28,11 @@ exports.getArticleComments = async (req, res, next) => {
        }
     }
 
-
-
-
-
-
-
-
 exports.postComment = async (req, res, next) => {
     try {
-        console.log(req.body)
         const newComment = req.body
-        const comment = await insertComment(newComment)
+        const {article_id} = req.params
+        const comment = await insertComment(newComment, article_id)
         return res.status(201).send({ comment })
 
     } catch (err) {
