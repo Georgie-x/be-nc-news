@@ -67,4 +67,14 @@ const insertComment = async (newComment, article_id) => {
     return result.rows[0]
 }
 
-module.exports = {fetchArticleById, fetchArticles, fetchArticleComments, insertComment}
+
+const updateArticle = async (newUpdate, article_id) => {
+    console.log("model")
+    const { inc_votes } = newUpdate
+    const query = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`
+
+    const body = await db.query(query,[inc_votes, article_id])
+    return body.rows[0]
+}
+
+module.exports = {fetchArticleById, fetchArticles, fetchArticleComments, insertComment, updateArticle}

@@ -165,12 +165,6 @@ describe('GET /api/articles/:article_id/comments', () => {
     })
 })
 
-describe('PATCH /api/articles/:article_id', () => {
-    test('should ', () => {
-        
-    });
-    
-});
 describe('POST /api/articles/:article_id/comments', () => {
     test('should return a status code of 201 and newly posted comment', () => {
         const newComment = { username: "rogersop", body: "Wow, this really is fantastic!" }
@@ -221,9 +215,28 @@ describe('POST /api/articles/:article_id/comments', () => {
         .send(newComment)
         .expect(400)
     })
-
-
-
-
-
 }) 
+
+describe.only('PATCH /api/articles/:article_id', () => {
+    test('should return a status code of 200 and the updated article', () => {
+        const newUpdate = { inc_votes: 33 }
+        return request(app)
+        .post("/api/articles/13")
+        .send(newUpdate)
+        .expect(201)
+        .then(({body}) => {
+            expect(body.article).toMatchObject({
+                author: expect.any(String),
+                title: expect.any(String),
+                body: expect.any(String),
+                article_id: 13,
+                topic: expect.any(String),
+                comment_id: expect.any(Number),
+                created_at: expect.any(String),
+                votes: 33
+            })
+        }) 
+    }) 
+})
+
+
