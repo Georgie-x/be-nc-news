@@ -217,7 +217,7 @@ describe('POST /api/articles/:article_id/comments', () => {
     })
 }) 
 
-describe.only('PATCH /api/articles/:article_id', () => {
+describe('PATCH /api/articles/:article_id', () => {
     test('should return a status code of 200 and the updated article', () => {
         const newUpdate = { inc_votes: 33 }
         return request(app)
@@ -236,6 +236,7 @@ describe.only('PATCH /api/articles/:article_id', () => {
             })
         }) 
     })  
+
     test('should return a status code of 404 and message if article_id is not found', () => {
         const newUpdate = { inc_votes: 33 }
         return request(app)
@@ -263,4 +264,25 @@ describe.only('PATCH /api/articles/:article_id', () => {
 
 })
 
+describe('DELETE /api/comments/:comment_id', () => {
+    test('should return a status code of 204 and no content', () => {
+        return request(app)
+        .delete("/api/comments/1")
+        .send()
+        .expect(204)
+    });
+    
+    test('should return a status code of 404 and message if comment_id is not found', () => {
+        return request(app)
+        .delete("/api/comments/9999")
+        .send()
+        .expect(404)
+    });
 
+    test('should return a status code of 400 and message if comment_id is invalid', () => {
+        return request(app)
+        .delete("/api/comments/notValid")
+        .send()
+        .expect(400)
+    });
+}); 

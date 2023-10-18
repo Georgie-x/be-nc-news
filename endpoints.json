@@ -57,8 +57,7 @@
         "author": "butter_bridge",
         "votes": "14",
         "created_at": "2020-10-31T03:03:00.000Z"
-      }]
-      
+      }]    
   },
   "POST /api/articles/:article_id/comments": {
     "description": "posts a comment and serves newly posted comment",
@@ -86,6 +85,11 @@
         "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
       }
     }
+  },
+  "DELETE /api/comments/:comment_id":{
+    "description": "deletes a comment when provided its id",
+    "queries":[],
+    "exampleResponse":{}
   }
 
 
