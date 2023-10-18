@@ -225,7 +225,6 @@ describe.only('PATCH /api/articles/:article_id', () => {
         .send(newUpdate)
         .expect(201)
         .then(({body}) => {
-            console.log(body)
             expect(body.article).toMatchObject({
                 author: expect.any(String),
                 title: expect.any(String),
@@ -236,7 +235,32 @@ describe.only('PATCH /api/articles/:article_id', () => {
                 votes: 33
             })
         }) 
-    }) 
+    })  
+    test('should return a status code of 404 and message if article_id is not found', () => {
+        const newUpdate = { inc_votes: 33 }
+        return request(app)
+        .patch("/api/articles/9999")
+        .send(newUpdate)
+        .expect(404)
+    })
+
+    test('should return a status code of 400 and message if article_id is invalid', () => {
+        const newUpdate = { inc_votes: 33 }
+        return request(app)
+        .patch("/api/articles/notValid")
+        .send(newUpdate)
+        .expect(400)
+    })
+
+    test('should return a status code of 400 and message if inc_votes is invalid', () => {
+        const newUpdate = { inc_votes: "notValid" }
+        return request(app)
+        .patch("/api/articles/13")
+        .send(newUpdate)
+        .expect(400)
+    });
+
+
 })
 
 

@@ -42,7 +42,6 @@ exports.postComment = async (req, res, next) => {
 
 exports.patchArticle = async (req, res, next) => {
     try {
-        console.log("controller")
         const newUpdate = req.body
         const {article_id} = req.params
         const article = await updateArticle(newUpdate, article_id)
