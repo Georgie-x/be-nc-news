@@ -63,8 +63,21 @@ const insertComment = async (newComment, article_id) => {
     const query = `INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *`
     
     const result = await db.query(query, [username, body, article_id])
-    console.log(result.rows[0])
     return result.rows[0]
 }
 
-module.exports = {fetchArticleById, fetchArticles, fetchArticleComments, insertComment}
+
+const updateArticle = async (newUpdate, article_id) => {
+    const validArticle = await fetchArticleById(article_id)
+    if (validArticle.length === 0) {
+        return Promise.reject({ status: 404, message: "article id not found"})
+    } 
+
+    const { inc_votes } = newUpdate
+    const query = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`
+
+    const body = await db.query(query,[inc_votes, article_id])
+    return body.rows[0]
+}
+
+module.exports = {fetchArticleById, fetchArticles, fetchArticleComments, insertComment, updateArticle}

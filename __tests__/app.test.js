@@ -215,9 +215,74 @@ describe('POST /api/articles/:article_id/comments', () => {
         .send(newComment)
         .expect(400)
     })
-
-
-
-
-
 }) 
+
+describe('PATCH /api/articles/:article_id', () => {
+    test('should return a status code of 200 and the updated article', () => {
+        const newUpdate = { inc_votes: 33 }
+        return request(app)
+        .patch("/api/articles/13")
+        .send(newUpdate)
+        .expect(201)
+        .then(({body}) => {
+            expect(body.article).toMatchObject({
+                author: expect.any(String),
+                title: expect.any(String),
+                body: expect.any(String),
+                article_id: 13,
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: 33
+            })
+        }) 
+    })  
+
+    test('should return a status code of 404 and message if article_id is not found', () => {
+        const newUpdate = { inc_votes: 33 }
+        return request(app)
+        .patch("/api/articles/9999")
+        .send(newUpdate)
+        .expect(404)
+    })
+
+    test('should return a status code of 400 and message if article_id is invalid', () => {
+        const newUpdate = { inc_votes: 33 }
+        return request(app)
+        .patch("/api/articles/notValid")
+        .send(newUpdate)
+        .expect(400)
+    })
+
+    test('should return a status code of 400 and message if inc_votes is invalid', () => {
+        const newUpdate = { inc_votes: "notValid" }
+        return request(app)
+        .patch("/api/articles/13")
+        .send(newUpdate)
+        .expect(400)
+    });
+
+
+})
+
+describe('DELETE /api/comments/:comment_id', () => {
+    test('should return a status code of 204 and no content', () => {
+        return request(app)
+        .delete("/api/comments/1")
+        .send()
+        .expect(204)
+    });
+    
+    test('should return a status code of 404 and message if comment_id is not found', () => {
+        return request(app)
+        .delete("/api/comments/9999")
+        .send()
+        .expect(404)
+    });
+
+    test('should return a status code of 400 and message if comment_id is invalid', () => {
+        return request(app)
+        .delete("/api/comments/notValid")
+        .send()
+        .expect(400)
+    });
+}); 

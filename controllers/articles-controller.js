@@ -1,4 +1,4 @@
-const { fetchArticleById, fetchArticles, fetchArticleComments, insertComment } = require("../models/articles-model.js")
+const { fetchArticleById, fetchArticles, fetchArticleComments, insertComment, updateArticle } = require("../models/articles-model.js")
 
 exports.getArticleById = async (req, res, next) => {
     try {
@@ -38,7 +38,16 @@ exports.postComment = async (req, res, next) => {
     } catch (err) {
         next(err)
     }
+}
 
+exports.patchArticle = async (req, res, next) => {
+    try {
+        const newUpdate = req.body
+        const {article_id} = req.params
+        const article = await updateArticle(newUpdate, article_id)
+        return res.status(201).send({ article })
 
-
+    } catch (err) {
+        next(err)
+    }
 }
