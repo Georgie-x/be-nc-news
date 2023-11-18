@@ -105,6 +105,16 @@ describe("GET /api/articles", () => {
 				});
 			});
 	});
+
+
+		test("should return a status code of 200 and array of articles filtered by topic", () => {
+			return request(app)
+				.get("/api/articles?topic=cooking")
+				.expect(200)
+				// .then(({ body }) => {
+				// 	expect(body.articles).toBeSortedBy("created_at", { descending: true });
+				// 	expect(body.articles).toHaveLength(13);
+	});
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
