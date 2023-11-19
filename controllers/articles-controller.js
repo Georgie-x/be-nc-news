@@ -18,13 +18,14 @@ exports.getArticleById = async (req, res, next) => {
 
 exports.getArticles = async (req, res, next) => {
 	try {
-		const { topic } = req.query
-		const articles = await fetchArticles(topic)
+		const { topic, sortby, order } = req.query
+		const articles = await fetchArticles(topic, sortby, order)
 		return res.status(200).send({ articles })
 	} catch (err) {
 		next(err)
 	}
 }
+
 exports.getArticleComments = async (req, res, next) => {
 	try {
 		const { article_id } = req.params

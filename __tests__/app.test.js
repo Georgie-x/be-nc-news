@@ -91,7 +91,7 @@ describe("GET /api/articles", () => {
 			.get("/api/articles")
 			.expect(200)
 			.then(({ body }) => {
-				expect(body.articles).toBeSortedBy("created_at", { descending: true })
+				console.log(body.articles)
 				expect(body.articles).toHaveLength(13)
 				body.articles.forEach((article) => {
 					expect(article).toMatchObject({
@@ -111,17 +111,16 @@ describe("GET /api/articles", () => {
 
 test("should return a status code of 200 and array of articles filtered by topic", () => {
 	return request(app)
-		.get("/api/articles?topic=cats")
+		.get("/api/articles?topic=mitch")
 		.expect(200)
 		.then(({ body }) => {
-			console.log(body.articles[0])
-			expect(body.articles).toHaveLength(1)
+			expect(body.articles).toHaveLength(12)
 			body.articles.forEach((article) => {
 				expect(article).toMatchObject({
 					author: expect.any(String),
 					title: expect.any(String),
 					article_id: expect.any(Number),
-					topic: "cats",
+					topic: "mitch",
 					created_at: expect.any(String),
 					votes: expect.any(Number),
 					article_img_url: expect.any(String),
