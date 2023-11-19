@@ -10,7 +10,7 @@ const {
 	patchArticle,
 } = require(".//controllers/articles-controller");
 const { deleteComment } = require(".//controllers/comments-controller");
-const { getUsers } = require(".//controllers/users-controller");
+const { getUsers, getUser } = require(".//controllers/users-controller");
 const cors = require("cors");
 
 app.use(cors());
@@ -34,6 +34,8 @@ app.patch("/api/articles/:article_id", patchArticle);
 app.delete("/api/comments/:comment_id", deleteComment);
 
 app.get("/api/users", getUsers);
+
+app.get("/api/users/:username", getUser)
 
 app.post("/api/articles/:article_id/comments", postComment);
 

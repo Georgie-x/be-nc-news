@@ -91,7 +91,6 @@ describe("GET /api/articles", () => {
 			.get("/api/articles")
 			.expect(200)
 			.then(({ body }) => {
-				console.log(body.articles)
 				expect(body.articles).toHaveLength(13)
 				body.articles.forEach((article) => {
 					expect(article).toMatchObject({
@@ -307,6 +306,22 @@ describe("GET /api/users", () => {
 						name: expect.any(String),
 						avatar_url: expect.any(String),
 					})
+				})
+			})
+	})
+})
+
+describe("GET /api/users/:username", () => {
+	test("should return user details ", () => {
+		return request(app)
+			.get("/api/users/rogersop")
+			.expect(200)
+			.then(({ body }) => {
+				console.log(body)
+				expect(body.user[0]).toMatchObject({
+					username: expect.any(String),
+					name: expect.any(String),
+					avatar_url: expect.any(String),
 				})
 			})
 	})
