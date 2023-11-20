@@ -1,8 +1,12 @@
 const db = require("../db/connection")
 
-
 const fetchArticleById = async (article_id) => {
-	const query = `SELECT * FROM articles WHERE article_id = $1`
+	const query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count
+    FROM articles
+    LEFT JOIN comments
+    ON articles.article_id = comments.article_id
+	WHERE articles.article_id = $1
+	GROUP BY articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url`
 	const body = await db.query(query, [article_id])
 	if (body.rows.length === 0) {
 		return Promise.reject({ status: 404, message: "article id not found" })
@@ -24,7 +28,6 @@ const fetchArticles = async (topic, sortby = "created_at", order = "DESC") => {
 		"comment_count",
 	]
 	const validOrder = ["ASC", "DESC"]
-
 
 	if (topic && !validTopic.includes(topic)) {
 		return Promise.reject({ status: 400, message: "topic not found" })
@@ -53,9 +56,11 @@ const fetchArticles = async (topic, sortby = "created_at", order = "DESC") => {
 		values.push(topic)
 	}
 	if (sortby && order) {
-		query += ` GROUP BY articles.author, articles.title, articles.article_id ORDER BY $${values.length + 1} ${order}`;
-		values.push(sortby);
-	  }
+		query += ` GROUP BY articles.author, articles.title, articles.article_id ORDER BY $${
+			values.length + 1
+		} ${order}`
+		values.push(sortby)
+	}
 
 	try {
 		const body = await db.query(query, values)
@@ -87,6 +92,7 @@ const fetchArticleComments = async (article_id) => {
 		return body.rows
 	}
 }
+
 
 const insertComment = async (newComment, article_id) => {
 	const validArticle = await fetchArticleById(article_id)
@@ -130,7 +136,7 @@ const updateArticle = async (newUpdate, article_id) => {
 module.exports = {
 	fetchArticleById,
 	fetchArticles,
-	fetchArticleComments,
 	insertComment,
+	fetchArticleComments,
 	updateArticle,
 }

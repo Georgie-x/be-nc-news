@@ -1,6 +1,6 @@
 const { fetchTopics } = require("../models/topics-model")
 
-exports.getTopics = async (req, res, next) => {
+const getTopics = async (req, res, next) => {
     try{
         const topics = await fetchTopics()
         return res.status(200).send({ topics })
@@ -8,3 +8,5 @@ exports.getTopics = async (req, res, next) => {
         next(err)
     }
 }
+
+module.exports = {getTopics}

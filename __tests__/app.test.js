@@ -55,14 +55,17 @@ describe("GET /api/articles/:article_id", () => {
 			.get("/api/articles/1")
 			.expect(200)
 			.then(({ body }) => {
-				expect(typeof body.article.author).toBe("string")
-				expect(typeof body.article.title).toBe("string")
-				expect(typeof body.article.article_id).toBe("number")
-				expect(typeof body.article.body).toBe("string")
-				expect(typeof body.article.topic).toBe("string")
-				expect(typeof body.article.created_at).toBe("string")
-				expect(typeof body.article.votes).toBe("number")
-				expect(typeof body.article.article_img_url).toBe("string")
+				expect(body.article).toMatchObject({
+					author: "butter_bridge",
+					title: "Living in the shadow of a great man",
+					article_id: 1,
+					topic: "mitch",
+					created_at: "2020-07-09T20:11:00.000Z",
+					votes: 100,
+					article_img_url:
+						"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+					comment_count: "11",
+				})
 			})
 	})
 
@@ -106,27 +109,27 @@ describe("GET /api/articles", () => {
 				})
 			})
 	})
-})
 
-test("should return a status code of 200 and array of articles filtered by topic", () => {
-	return request(app)
-		.get("/api/articles?topic=mitch")
-		.expect(200)
-		.then(({ body }) => {
-			expect(body.articles).toHaveLength(12)
-			body.articles.forEach((article) => {
-				expect(article).toMatchObject({
-					author: expect.any(String),
-					title: expect.any(String),
-					article_id: expect.any(Number),
-					topic: "mitch",
-					created_at: expect.any(String),
-					votes: expect.any(Number),
-					article_img_url: expect.any(String),
-					comment_count: expect.any(String),
+	test("should return a status code of 200 and array of articles filtered by topic", () => {
+		return request(app)
+			.get("/api/articles?topic=mitch")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.articles).toHaveLength(12)
+				body.articles.forEach((article) => {
+					expect(article).toMatchObject({
+						author: expect.any(String),
+						title: expect.any(String),
+						article_id: expect.any(Number),
+						topic: "mitch",
+						created_at: expect.any(String),
+						votes: expect.any(Number),
+						article_img_url: expect.any(String),
+						comment_count: expect.any(String),
+					})
 				})
 			})
-		})
+	})
 })
 
 describe("GET /api/articles/:article_id/comments", () => {
@@ -293,6 +296,27 @@ describe("DELETE /api/comments/:comment_id", () => {
 	})
 })
 
+describe("PATCH /api/comments/:comment_id", () => {
+	test("should return a status code of 200 and the updated comment", () => {
+		const newUpdate = { inc_votes: 33 }
+		return request(app)
+			.patch("/api/comments/1")
+			.send(newUpdate)
+			.expect(200)
+			.then(({ body }) => {
+				console.log(body)
+				expect(body.comment).toMatchObject({
+					comment_id: 1,
+					body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+					article_id: 9,
+					author: 'butter_bridge',
+					votes: 49,
+					created_at: '2020-04-06T12:17:00.000Z'
+				})
+			})
+	})
+})
+
 describe("GET /api/users", () => {
 	test("should return an array of all user details ", () => {
 		return request(app)
@@ -317,7 +341,6 @@ describe("GET /api/users/:username", () => {
 			.get("/api/users/rogersop")
 			.expect(200)
 			.then(({ body }) => {
-				console.log(body)
 				expect(body.user[0]).toMatchObject({
 					username: expect.any(String),
 					name: expect.any(String),

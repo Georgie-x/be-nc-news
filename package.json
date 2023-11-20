@@ -8,7 +8,7 @@
     "seed-prod": "NODE_ENV=production npm run seed-prod",
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "node ./db/seeds/run-seed.js",
-    "test": "jest",
+    "test": "jest --verbose",
     "prepare": "husky install",
     "helper": "psql -f ./db/helper.sql > helper.txt"
   },

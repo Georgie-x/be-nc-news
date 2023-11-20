@@ -2,11 +2,11 @@ const {
 	fetchArticleById,
 	fetchArticles,
 	fetchArticleComments,
-	insertComment,
 	updateArticle,
+	insertComment
 } = require("../models/articles-model.js")
 
-exports.getArticleById = async (req, res, next) => {
+const getArticleById = async (req, res, next) => {
 	try {
 		const { article_id } = req.params
 		const article = await fetchArticleById(article_id)
@@ -16,7 +16,7 @@ exports.getArticleById = async (req, res, next) => {
 	}
 }
 
-exports.getArticles = async (req, res, next) => {
+const getArticles = async (req, res, next) => {
 	try {
 		const { topic, sortby, order } = req.query
 		const articles = await fetchArticles(topic, sortby, order)
@@ -26,7 +26,7 @@ exports.getArticles = async (req, res, next) => {
 	}
 }
 
-exports.getArticleComments = async (req, res, next) => {
+const getArticleComments = async (req, res, next) => {
 	try {
 		const { article_id } = req.params
 		const comments = await fetchArticleComments(article_id)
@@ -35,9 +35,9 @@ exports.getArticleComments = async (req, res, next) => {
 		next(err)
 	}
 }
-
-exports.postComment = async (req, res, next) => {
+const postComment = async (req, res, next) => {
 	try {
+
 		const newComment = req.body
 		const { article_id } = req.params
 		const comment = await insertComment(newComment, article_id)
@@ -46,8 +46,7 @@ exports.postComment = async (req, res, next) => {
 		next(err)
 	}
 }
-
-exports.patchArticle = async (req, res, next) => {
+const patchArticle = async (req, res, next) => {
 	try {
 		const newUpdate = req.body
 		const { article_id } = req.params
@@ -56,4 +55,12 @@ exports.patchArticle = async (req, res, next) => {
 	} catch (err) {
 		next(err)
 	}
+}
+
+module.exports = {
+	getArticleById,
+	getArticles,
+	getArticleComments,
+	patchArticle,
+	postComment
 }
