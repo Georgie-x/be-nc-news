@@ -6,7 +6,8 @@ const {
 	getArticleById,
 	getArticles,
 	getArticleComments,
-	patchArticle,	
+	patchArticle,
+	postArticle,	
 	postComment,
 } = require(".//controllers/articles-controller")
 const {
@@ -26,19 +27,21 @@ app.get("/api", getEndpoints)
 
 app.get("/api/topics", getTopics)
 
+app.get("/api/articles", getArticles)
+
+app.post("/api/articles", postArticle)
+
 app.get("/api/articles/:article_id", getArticleById)
 
-app.get("/api/articles", getArticles)
+app.patch("/api/articles/:article_id", patchArticle)
 
 app.get("/api/articles/:article_id/comments", getArticleComments)
 
 app.post("/api/articles/:article_id/comments", postComment)
 
-app.patch("/api/articles/:article_id", patchArticle)
+app.patch("/api/comments/:comment_id", patchComment)
 
 app.delete("/api/comments/:comment_id", deleteComment)
-
-app.patch("/api/comments/:comment_id", patchComment)
 
 app.get("/api/users", getUsers)
 

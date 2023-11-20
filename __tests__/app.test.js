@@ -49,45 +49,6 @@ describe("GET /api/topics", () => {
 	})
 })
 
-describe("GET /api/articles/:article_id", () => {
-	test("should return a status code of 200 and an article object with correct properties", () => {
-		return request(app)
-			.get("/api/articles/1")
-			.expect(200)
-			.then(({ body }) => {
-				expect(body.article).toMatchObject({
-					author: "butter_bridge",
-					title: "Living in the shadow of a great man",
-					article_id: 1,
-					topic: "mitch",
-					created_at: "2020-07-09T20:11:00.000Z",
-					votes: 100,
-					article_img_url:
-						"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-					comment_count: "11",
-				})
-			})
-	})
-
-	test("should return a status code of 400 and message if article_id is invalid", () => {
-		return request(app)
-			.get("/api/articles/notValid")
-			.expect(400)
-			.then(({ body }) => {
-				expect(body.message).toBe("invalid article id")
-			})
-	})
-
-	test("should return a status code of 404 and message if article_id is not found", () => {
-		return request(app)
-			.get("/api/articles/9999")
-			.expect(404)
-			.then(({ body }) => {
-				expect(body.message).toBe("article id not found")
-			})
-	})
-})
-
 describe("GET /api/articles", () => {
 	test("should return a status code of 200 and array of articles ordered by created_at", () => {
 		return request(app)
@@ -129,6 +90,111 @@ describe("GET /api/articles", () => {
 					})
 				})
 			})
+	})
+})
+describe("POST /api/articles", () => {
+	test("should return a status code of 201 and newly posted article", () => {
+		const newArticle = {
+			author: "rogersop",
+			title: "here's a cat",
+			body: "I love cats so much!",
+			topic: "cats",
+			article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+		}
+		return request(app)
+			.post("/api/articles/")
+			.send(newArticle)
+			.expect(201)
+			.then(({ body }) => {
+				expect(body.article).toMatchObject({
+					author: "rogersop",
+					title: "here's a cat",
+					body: "I love cats so much!",
+					topic: "cats",
+					article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",		
+					article_id: 14,
+					comment_count: 0,
+					created_at: expect.any(String),
+					votes: 0
+				})
+			})
+	})
+});
+
+describe("GET /api/articles/:article_id", () => {
+	test("should return a status code of 200 and an article object with correct properties", () => {
+		return request(app)
+			.get("/api/articles/1")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.article).toMatchObject({
+					author: "butter_bridge",
+					title: "Living in the shadow of a great man",
+					article_id: 1,
+					topic: "mitch",
+					created_at: "2020-07-09T20:11:00.000Z",
+					votes: 100,
+					article_img_url:
+						"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+					comment_count: "11",
+				})
+			})
+	})
+
+	test("should return a status code of 400 and message if article_id is invalid", () => {
+		return request(app)
+			.get("/api/articles/notValid")
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.message).toBe("invalid article id")
+			})
+	})
+
+	test("should return a status code of 404 and message if article_id is not found", () => {
+		return request(app)
+			.get("/api/articles/9999")
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.message).toBe("article id not found")
+			})
+	})
+})
+describe("PATCH /api/articles/:article_id", () => {
+	test("should return a status code of 200 and the updated article", () => {
+		const newUpdate = { inc_votes: 33 }
+		return request(app)
+			.patch("/api/articles/13")
+			.send(newUpdate)
+			.expect(201)
+			.then(({ body }) => {
+				expect(body.article).toMatchObject({
+					author: expect.any(String),
+					title: expect.any(String),
+					body: expect.any(String),
+					article_id: 13,
+					topic: expect.any(String),
+					created_at: expect.any(String),
+					votes: 33,
+				})
+			})
+	})
+
+	test("should return a status code of 404 and message if article_id is not found", () => {
+		const newUpdate = { inc_votes: 33 }
+		return request(app).patch("/api/articles/9999").send(newUpdate).expect(404)
+	})
+
+	test("should return a status code of 400 and message if article_id is invalid", () => {
+		const newUpdate = { inc_votes: 33 }
+		return request(app)
+			.patch("/api/articles/notValid")
+			.send(newUpdate)
+			.expect(400)
+	})
+
+	test("should return a status code of 400 and message if inc_votes is invalid", () => {
+		const newUpdate = { inc_votes: "notValid" }
+		return request(app).patch("/api/articles/13").send(newUpdate).expect(400)
 	})
 })
 
@@ -178,7 +244,6 @@ describe("GET /api/articles/:article_id/comments", () => {
 			})
 	})
 })
-
 describe("POST /api/articles/:article_id/comments", () => {
 	test("should return a status code of 201 and newly posted comment", () => {
 		const newComment = {
@@ -243,45 +308,25 @@ describe("POST /api/articles/:article_id/comments", () => {
 	})
 })
 
-describe("PATCH /api/articles/:article_id", () => {
-	test("should return a status code of 200 and the updated article", () => {
+describe("PATCH /api/comments/:comment_id", () => {
+	test("should return a status code of 200 and the updated comment", () => {
 		const newUpdate = { inc_votes: 33 }
 		return request(app)
-			.patch("/api/articles/13")
+			.patch("/api/comments/1")
 			.send(newUpdate)
-			.expect(201)
+			.expect(200)
 			.then(({ body }) => {
-				expect(body.article).toMatchObject({
-					author: expect.any(String),
-					title: expect.any(String),
-					body: expect.any(String),
-					article_id: 13,
-					topic: expect.any(String),
-					created_at: expect.any(String),
-					votes: 33,
+				expect(body.comment).toMatchObject({
+					comment_id: 1,
+					body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+					article_id: 9,
+					author: 'butter_bridge',
+					votes: 49,
+					created_at: '2020-04-06T12:17:00.000Z'
 				})
 			})
 	})
-
-	test("should return a status code of 404 and message if article_id is not found", () => {
-		const newUpdate = { inc_votes: 33 }
-		return request(app).patch("/api/articles/9999").send(newUpdate).expect(404)
-	})
-
-	test("should return a status code of 400 and message if article_id is invalid", () => {
-		const newUpdate = { inc_votes: 33 }
-		return request(app)
-			.patch("/api/articles/notValid")
-			.send(newUpdate)
-			.expect(400)
-	})
-
-	test("should return a status code of 400 and message if inc_votes is invalid", () => {
-		const newUpdate = { inc_votes: "notValid" }
-		return request(app).patch("/api/articles/13").send(newUpdate).expect(400)
-	})
 })
-
 describe("DELETE /api/comments/:comment_id", () => {
 	test("should return a status code of 204 and no content", () => {
 		return request(app).delete("/api/comments/1").send().expect(204)
@@ -296,26 +341,6 @@ describe("DELETE /api/comments/:comment_id", () => {
 	})
 })
 
-describe("PATCH /api/comments/:comment_id", () => {
-	test("should return a status code of 200 and the updated comment", () => {
-		const newUpdate = { inc_votes: 33 }
-		return request(app)
-			.patch("/api/comments/1")
-			.send(newUpdate)
-			.expect(200)
-			.then(({ body }) => {
-				console.log(body)
-				expect(body.comment).toMatchObject({
-					comment_id: 1,
-					body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-					article_id: 9,
-					author: 'butter_bridge',
-					votes: 49,
-					created_at: '2020-04-06T12:17:00.000Z'
-				})
-			})
-	})
-})
 
 describe("GET /api/users", () => {
 	test("should return an array of all user details ", () => {

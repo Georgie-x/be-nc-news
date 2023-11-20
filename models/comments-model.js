@@ -3,7 +3,6 @@ const db = require("../db/connection")
 
 
 const removeComment = async (comment_id) => {
-    console.log("hhhii")
     const query = `DELETE FROM comments WHERE comment_id = $1`   
     const result = await db.query(query, [comment_id])
 

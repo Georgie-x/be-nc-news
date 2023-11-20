@@ -93,7 +93,6 @@ const fetchArticleComments = async (article_id) => {
 	}
 }
 
-
 const insertComment = async (newComment, article_id) => {
 	const validArticle = await fetchArticleById(article_id)
 	if (validArticle.length === 0) {
@@ -133,10 +132,35 @@ const updateArticle = async (newUpdate, article_id) => {
 	return body.rows[0]
 }
 
+const insertArticle = async (newArticle) => {
+	const { author, title, body, topic, article_img_url } = newArticle
+
+	if (typeof body != "string") {
+		return Promise.reject({ status: 400, message: "Article not valid" })
+	}
+	try {
+		const query = `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *`
+
+		const result = await db.query(query, [
+			author,
+			title,
+			body,
+			topic,
+			article_img_url,
+		])
+
+		const finalResult = { ...result.rows[0], comment_count: 0 }
+		return finalResult
+	} catch (err) {
+		console.log(err)
+	}
+}
+
 module.exports = {
 	fetchArticleById,
 	fetchArticles,
 	insertComment,
 	fetchArticleComments,
 	updateArticle,
+	insertArticle,
 }
