@@ -16,53 +16,53 @@ const fetchArticleById = async (article_id) => {
 }
 
 const fetchArticles = async (topic, sortby = "created_at", order = "DESC") => {
-	const validTopic = ["mitch", "cats", "cooking", "coding", "sports"]
-	const validSortBy = [
-		"author",
-		"title",
-		"article_id",
-		"topic",
-		"created_at",
-		"votes",
-		"article_img_url",
-		"comment_count",
-	]
-	const validOrder = ["ASC", "DESC"]
+	try {
+		const validTopic = ["mitch", "cats", "cooking", "coding", "sports"]
+		const validSortBy = [
+			"author",
+			"title",
+			"article_id",
+			"topic",
+			"created_at",
+			"votes",
+			"article_img_url",
+			"comment_count",
+		]
+		const validOrder = ["ASC", "DESC"]
 
-	if (topic && !validTopic.includes(topic)) {
-		return Promise.reject({ status: 400, message: "topic not found" })
-	}
+		if (topic && !validTopic.includes(topic)) {
+			return Promise.reject({ status: 400, message: "topic not found" })
+		}
 
-	if (sortby && !validSortBy.includes(sortby)) {
-		return Promise.reject({ status: 400, message: "sortby not found" })
-	}
+		if (sortby && !validSortBy.includes(sortby)) {
+			return Promise.reject({ status: 400, message: "sortby not found" })
+		}
 
-	if (order && !validOrder.includes(order)) {
-		return Promise.reject({
-			status: 400,
-			message: "order should be desc or asc",
-		})
-	}
+		if (order && !validOrder.includes(order)) {
+			return Promise.reject({
+				status: 400,
+				message: "order should be desc or asc",
+			})
+		}
 
-	let query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count
+		let query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count
     FROM articles
     LEFT JOIN comments
     ON articles.article_id = comments.article_id`
 
-	const values = []
+		const values = []
 
-	if (topic) {
-		query += ` WHERE articles.topic = $${values.length + 1}`
-		values.push(topic)
-	}
-	if (sortby && order) {
-		query += ` GROUP BY articles.author, articles.title, articles.article_id ORDER BY $${
-			values.length + 1
-		} ${order}`
-		values.push(sortby)
-	}
+		if (topic) {
+			query += ` WHERE articles.topic = $${values.length + 1}`
+			values.push(topic)
+		}
+		if (sortby && order) {
+			query += ` GROUP BY articles.author, articles.title, articles.article_id ORDER BY $${
+				values.length + 1
+			} ${order}`
+			values.push(sortby)
+		}
 
-	try {
 		const body = await db.query(query, values)
 		if (body.rows.length === 0) {
 			return Promise.reject({ status: 404, message: "no articles found" })
@@ -70,18 +70,40 @@ const fetchArticles = async (topic, sortby = "created_at", order = "DESC") => {
 			return body.rows
 		}
 	} catch (err) {
-		console.log(err)
+		next(err)
 	}
 }
 
-const fetchArticleComments = async (article_id) => {
+const fetchArticleComments = async (article_id, limit, p) => {
+	article_id = Number(article_id)
+	limit = limit || 10
+	p = p || 1
+
 	const validArticle = await fetchArticleById(article_id)
 	if (validArticle.length === 0) {
 		return Promise.reject({ status: 404, message: "article id not found" })
 	}
 
-	const query = `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`
-	const body = await db.query(query, [article_id])
+	if (isNaN(limit)) {
+		return Promise.reject({
+			status: 400,
+			message: "page limit should be a number",
+		})
+	}
+
+	if (isNaN(p)) {
+		return Promise.reject({ status: 400, message: "page should be a number" })
+	}
+
+	const offset = (p - 1) * limit
+	let query = `
+	SELECT * FROM comments 
+	WHERE article_id = $1 
+	ORDER BY created_at DESC 
+	LIMIT $2 OFFSET $3`
+
+	const values = [article_id, limit, offset]
+	const body = await db.query(query, values)
 
 	if (body.rows.length === 0) {
 		return Promise.reject({
@@ -138,22 +160,18 @@ const insertArticle = async (newArticle) => {
 	if (typeof body != "string") {
 		return Promise.reject({ status: 400, message: "Article not valid" })
 	}
-	try {
-		const query = `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *`
+	const query = `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *`
 
-		const result = await db.query(query, [
-			author,
-			title,
-			body,
-			topic,
-			article_img_url,
-		])
+	const result = await db.query(query, [
+		author,
+		title,
+		body,
+		topic,
+		article_img_url,
+	])
 
-		const finalResult = { ...result.rows[0], comment_count: 0 }
-		return finalResult
-	} catch (err) {
-		console.log(err)
-	}
+	const finalResult = { ...result.rows[0], comment_count: 0 }
+	return finalResult
 }
 
 module.exports = {

@@ -7,15 +7,19 @@ const {
 	getArticles,
 	getArticleComments,
 	patchArticle,
-	postArticle,	
+	postArticle,
 	postComment,
 } = require(".//controllers/articles-controller")
 const {
 	deleteComment,
 	patchComment,
-
 } = require(".//controllers/comments-controller")
 const { getUsers, getUser } = require(".//controllers/users-controller")
+const {
+	handleCustomErrors,
+	handlePsqlErrors,
+	handleServerErrors,
+} = require("./controllers/errors-controller")
 
 const cors = require("cors")
 
@@ -47,18 +51,11 @@ app.get("/api/users", getUsers)
 
 app.get("/api/users/:username", getUser)
 
+app.use(handleCustomErrors)
 
-app.use((err, req, res, next) => {
-	if (err.code === "22P02") {
-		res.status(400).send({ message: "invalid article id" })
-	} else {
-		next(err)
-	}
-})
+app.use(handlePsqlErrors)
 
-app.use((err, req, res, next) => {
-	res.status(err.status).send({ message: err.message })
-})
+app.use(handleServerErrors)
 
 app.all("/*", (req, res) => {
 	res.status(404).send({ message: "invalid path" })

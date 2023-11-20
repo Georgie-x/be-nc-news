@@ -73,16 +73,16 @@ describe("GET /api/articles", () => {
 
 	test("should return a status code of 200 and array of articles filtered by topic", () => {
 		return request(app)
-			.get("/api/articles?topic=mitch")
+			.get("/api/articles?topic=cats")
 			.expect(200)
 			.then(({ body }) => {
-				expect(body.articles).toHaveLength(12)
+				expect(body.articles).toHaveLength(1)
 				body.articles.forEach((article) => {
 					expect(article).toMatchObject({
 						author: expect.any(String),
 						title: expect.any(String),
 						article_id: expect.any(Number),
-						topic: "mitch",
+						topic: "cats",
 						created_at: expect.any(String),
 						votes: expect.any(Number),
 						article_img_url: expect.any(String),
@@ -99,7 +99,8 @@ describe("POST /api/articles", () => {
 			title: "here's a cat",
 			body: "I love cats so much!",
 			topic: "cats",
-			article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+			article_img_url:
+				"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
 		}
 		return request(app)
 			.post("/api/articles/")
@@ -111,15 +112,16 @@ describe("POST /api/articles", () => {
 					title: "here's a cat",
 					body: "I love cats so much!",
 					topic: "cats",
-					article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",		
+					article_img_url:
+						"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
 					article_id: 14,
 					comment_count: 0,
 					created_at: expect.any(String),
-					votes: 0
+					votes: 0,
 				})
 			})
 	})
-});
+})
 
 describe("GET /api/articles/:article_id", () => {
 	test("should return a status code of 200 and an article object with correct properties", () => {
@@ -146,7 +148,7 @@ describe("GET /api/articles/:article_id", () => {
 			.get("/api/articles/notValid")
 			.expect(400)
 			.then(({ body }) => {
-				expect(body.message).toBe("invalid article id")
+				expect(body.message).toBe("Invalid input")
 			})
 	})
 
@@ -204,7 +206,7 @@ describe("GET /api/articles/:article_id/comments", () => {
 			.get("/api/articles/1/comments")
 			.expect(200)
 			.then(({ body }) => {
-				expect(body).toHaveLength(11)
+				expect(body).toHaveLength(10)
 				expect(body).toBeSortedBy("created_at", { descending: true })
 				body.forEach((comment) => {
 					expect(typeof comment.comment_id).toBe("number")
@@ -213,6 +215,26 @@ describe("GET /api/articles/:article_id/comments", () => {
 					expect(typeof comment.author).toBe("string")
 					expect(typeof comment.body).toBe("string")
 					expect(typeof comment.article_id).toBe("number")
+				})
+			})
+	})
+
+	test("should return a status code of 200 and array of 5 comments when limit query is included", () => {
+		return request(app)
+			.get("/api/articles/1/comments?limit=5")
+			.expect(200)
+			.then(({ body }) => {
+				console.log(body)
+				expect(body).toHaveLength(5)
+				body.forEach((comment) => {
+					expect(comment).toMatchObject({
+						author: expect.any(String),
+						body: expect.any(String),
+						article_id: expect.any(Number),
+						comment_id: expect.any(Number),
+						created_at: expect.any(String),
+						votes: expect.any(Number),
+					})
 				})
 			})
 	})
@@ -231,7 +253,7 @@ describe("GET /api/articles/:article_id/comments", () => {
 			.get("/api/articles/notValid/comments")
 			.expect(400)
 			.then(({ body }) => {
-				expect(body.message).toBe("invalid article id")
+				expect(body.message).toBe("Invalid input")
 			})
 	})
 
@@ -320,9 +342,9 @@ describe("PATCH /api/comments/:comment_id", () => {
 					comment_id: 1,
 					body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
 					article_id: 9,
-					author: 'butter_bridge',
+					author: "butter_bridge",
 					votes: 49,
-					created_at: '2020-04-06T12:17:00.000Z'
+					created_at: "2020-04-06T12:17:00.000Z",
 				})
 			})
 	})
@@ -340,7 +362,6 @@ describe("DELETE /api/comments/:comment_id", () => {
 		return request(app).delete("/api/comments/notValid").send().expect(400)
 	})
 })
-
 
 describe("GET /api/users", () => {
 	test("should return an array of all user details ", () => {
