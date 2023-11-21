@@ -49,6 +49,33 @@ describe("GET /api/topics", () => {
 	})
 })
 
+describe("POST /api/topics", () => {
+	test("should return a status code of 201 and new topic", () => {
+		const newTopic = { slug: "dinosaurs", description: "the big guys from ages ago" }
+		return request(app)
+			.post("/api/topics")
+			.send(newTopic)
+			.expect(201)
+			.then(({ body }) => {
+				expect(body.topic).toMatchObject({
+					slug: "dinosaurs",
+					description: "the big guys from ages ago",
+				})
+			})
+	})
+
+	test("should return a status code of 400 if topic slug is invalid", () => {
+		const newTopic = { slug: 0, description: "the big guys from ages ago" }
+		return request(app).post("/api/topics").send(newTopic).expect(400)
+	})
+	test("should return a status code of 400 if topic description is invalid", () => {
+		const newTopic = { slug: 'dinosaurs', description: 0 }
+		return request(app).post("/api/topics").send(newTopic).expect(400)
+	})
+
+
+})
+
 describe("GET /api/articles", () => {
 	test("should return a status code of 200 and array of articles ordered by created_at", () => {
 		return request(app)
@@ -136,7 +163,6 @@ describe("GET /api/articles", () => {
 				expect(body.message).toBe("sortby not found")
 			})
 	})
-
 })
 
 describe("POST /api/articles", () => {
