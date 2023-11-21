@@ -1,3 +1,5 @@
+
+
 const handleCustomErrors = (err, req, res, next) => {
 	if (err.status && err.message) {
 		res.status(err.status).send({ message: err.message })
@@ -19,4 +21,4 @@ const handleServerErrors = (err, req, res, next) => {
 	} else next(err)
 }
 
-module.exports = { handleCustomErrors, handlePsqlErrors, handleServerErrors }
+module.exports= {handleCustomErrors, handlePsqlErrors, handleServerErrors}

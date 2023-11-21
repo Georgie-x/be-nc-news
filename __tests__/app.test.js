@@ -418,7 +418,7 @@ describe("GET /api/users", () => {
 describe("GET /api/users/:username", () => {
 	test("should return user details ", () => {
 		return request(app)
-			.get("/api/users/rogersop")
+			.get("/api/users/lurker")
 			.expect(200)
 			.then(({ body }) => {
 				expect(body.user[0]).toMatchObject({
