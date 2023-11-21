@@ -30,21 +30,26 @@ const fetchArticles = async (topic, sortby, order, limit, p) => {
 	]
 	const validOrder = ['ASC', 'DESC']
 
-	// if (topic && !validTopic.includes(topic)) {
-	// 	return Promise.reject({ status: 400, message: "topic not found" })
-	// }
-	// if (sortby && !validSortBy.includes(sortby)) {
-	// 	return Promise.reject({ status: 400, message: "sortby not found" })
-	// }
-	// if (order && !validOrder.includes(order)) {
-	// 	return Promise.reject({ status: 400, message: "order should be desc or asc" })
-	// }
-	// if (isNaN(limit)) {
-	// 	return Promise.reject({ status: 400, message: "page limit should be a number" })
-	// }
-	// if (isNaN(p)) {
-	// 	return Promise.reject({ status: 400, message: "page should be a number" })
-	// }
+	sortby = sortby || `created_at`
+	order = order || `DESC`
+	limit = Number(limit) || 10
+	p = p || 1
+
+	if (topic && !validTopic.includes(topic)) {
+		return Promise.reject({ status: 404, message: "topic not found" })
+	}
+	if (sortby && !validSortBy.includes(sortby)) {
+		return Promise.reject({ status: 404, message: "sortby not found" })
+	}
+	if (order && !validOrder.includes(order)) {
+		return Promise.reject({ status: 400, message: "order should be desc or asc" })
+	}
+	if (isNaN(limit)) {
+		return Promise.reject({ status: 400, message: "page limit should be a number" })
+	}
+	if (isNaN(p)) {
+		return Promise.reject({ status: 400, message: "page should be a number" })
+	}
 
 
 	let query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count, COUNT(articles.article_id) AS total_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id`
@@ -56,10 +61,7 @@ const fetchArticles = async (topic, sortby, order, limit, p) => {
 		values.push(topic)
 	}
 
-	sortby = sortby || `created_at`
-	order = order || `DESC`
-	limit = Number(limit) || 10
-	p = p || 1
+	
 
 	query += ` GROUP BY articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url ORDER BY $${
 		values.length + 1
