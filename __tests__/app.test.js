@@ -55,7 +55,7 @@ describe("GET /api/articles", () => {
 			.get("/api/articles")
 			.expect(200)
 			.then(({ body }) => {
-				expect(body.articles).toHaveLength(13)
+				expect(body.articles).toHaveLength(10)
 				body.articles.forEach((article) => {
 					expect(article).toMatchObject({
 						author: expect.any(String),
@@ -87,6 +87,27 @@ describe("GET /api/articles", () => {
 						votes: expect.any(Number),
 						article_img_url: expect.any(String),
 						comment_count: expect.any(String),
+					})
+				})
+			})
+	})
+	test("should return a status code of 200 and array of 5 articles when limit query is included", () => {
+		return request(app)
+			.get("/api/articles?limit=5")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.articles).toHaveLength(5)
+				body.articles.forEach((article) => {
+					expect(article).toMatchObject({
+						author: expect.any(String),
+						title: expect.any(String),
+						article_id: expect.any(Number),
+						topic: expect.any(String),
+						created_at: expect.any(String),
+						votes: expect.any(Number),
+						article_img_url: expect.any(String),
+						comment_count: expect.any(String),
+						total_count: expect.any(String),
 					})
 				})
 			})
@@ -224,7 +245,6 @@ describe("GET /api/articles/:article_id/comments", () => {
 			.get("/api/articles/1/comments?limit=5")
 			.expect(200)
 			.then(({ body }) => {
-				console.log(body)
 				expect(body).toHaveLength(5)
 				body.forEach((comment) => {
 					expect(comment).toMatchObject({
