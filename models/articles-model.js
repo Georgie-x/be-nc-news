@@ -15,9 +15,10 @@ const fetchArticleById = async (article_id) => {
 	}
 }
 
-const fetchArticles = async (topic, sortby, order, limit, p) => {
-
+const fetchArticles = async (author, topic, sortby, order, limit, p) => {
+console.log(author, topic, sortby, order, limit, p)
 	const validTopic = ['mitch', 'cats', 'cooking', 'coding', 'sports']
+	const validAuthor = ['butter_bridge', 'lurker', 'icellusedkars', 'rogersop']
 	const validSortBy = [
 		'author',
 		'title',
@@ -38,12 +39,19 @@ const fetchArticles = async (topic, sortby, order, limit, p) => {
 	if (topic && !validTopic.includes(topic)) {
 		return Promise.reject({ status: 404, message: "topic not found" })
 	}
+
+	if (author && !validAuthor.includes(author)) {
+		return Promise.reject({ status: 404, message: "author not found" })
+	}
+
+
 	if (sortby && !validSortBy.includes(sortby)) {
 		return Promise.reject({ status: 404, message: "sortby not found" })
 	}
 	if (order && !validOrder.includes(order)) {
 		return Promise.reject({ status: 400, message: "order should be desc or asc" })
 	}
+
 	if (isNaN(limit)) {
 		return Promise.reject({ status: 400, message: "page limit should be a number" })
 	}
@@ -61,7 +69,10 @@ const fetchArticles = async (topic, sortby, order, limit, p) => {
 		values.push(topic)
 	}
 
-	
+	if (author) {
+		query += ` WHERE articles.author = $${values.length + 1}`
+		values.push(author)
+	}
 
 	query += ` GROUP BY articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url ORDER BY $${
 		values.length + 1
@@ -176,6 +187,17 @@ const insertArticle = async (newArticle) => {
 	return finalResult
 }
 
+const removeArticle = async (article_id) => {
+    const query = `DELETE FROM articles WHERE article_id = $1`   
+    const result = await db.query(query, [article_id])
+
+    if (result.rowCount != 1) {
+        return Promise.reject({ status: 404, message: "article id not found"})
+    } else {
+        return 204
+    }        
+}
+
 module.exports = {
 	fetchArticleById,
 	fetchArticles,
@@ -183,4 +205,5 @@ module.exports = {
 	fetchArticleComments,
 	updateArticle,
 	insertArticle,
+	removeArticle
 }

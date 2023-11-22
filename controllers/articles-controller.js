@@ -4,6 +4,7 @@ const {
 	fetchArticleComments,
 	updateArticle,
 	insertArticle,
+	removeArticle,
 	insertComment,
 } = require("../models/articles-model.js")
 
@@ -19,8 +20,8 @@ const getArticleById = async (req, res, next) => {
 
 const getArticles = async (req, res, next) => {
 	try {
-		const { topic, sortby, order, limit, p } = req.query
-		const articles = await fetchArticles(topic, sortby, order, limit, p)
+		const { author, topic, sortby, order, limit, p } = req.query
+		const articles = await fetchArticles(author, topic, sortby, order, limit, p)
 		return res.status(200).send({ articles })
 	} catch (err) {
 		next(err)
@@ -68,11 +69,22 @@ const postArticle = async (req, res, next) => {
 	}
 }
 
+const deleteArticle = async (req, res, next) => {
+	try {
+		const { article_id } = req.params
+		const response = await removeArticle(article_id)
+		return res.status(response).send()
+	} catch (err) {
+		next(err)
+	}
+}
+
 module.exports = {
 	getArticleById,
 	getArticles,
 	getArticleComments,
 	patchArticle,
+	deleteArticle,
 	postArticle,
 	postComment,
 }

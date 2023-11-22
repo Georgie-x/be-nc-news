@@ -69,11 +69,9 @@ describe("POST /api/topics", () => {
 		return request(app).post("/api/topics").send(newTopic).expect(400)
 	})
 	test("should return a status code of 400 if topic description is invalid", () => {
-		const newTopic = { slug: 'dinosaurs', description: 0 }
+		const newTopic = { slug: "dinosaurs", description: 0 }
 		return request(app).post("/api/topics").send(newTopic).expect(400)
 	})
-
-
 })
 
 describe("GET /api/articles", () => {
@@ -139,12 +137,41 @@ describe("GET /api/articles", () => {
 				})
 			})
 	})
+	test("should return a status code of 200 and filtered array of articles when author query is included", () => {
+		return request(app)
+			.get("/api/articles?author=rogersop")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.articles).toHaveLength(3)
+				body.articles.forEach((article) => {
+					expect(article).toMatchObject({
+						author: 'rogersop',
+						title: expect.any(String),
+						article_id: expect.any(Number),
+						topic: expect.any(String),
+						created_at: expect.any(String),
+						votes: expect.any(Number),
+						article_img_url: expect.any(String),
+						comment_count: expect.any(String),
+						total_count: expect.any(String),
+					})
+				})
+			})
+	})
 	test("should return a status code of 404 and message if topic is invalid", () => {
 		return request(app)
 			.get("/api/articles?topic=cast")
 			.expect(404)
 			.then(({ body }) => {
 				expect(body.message).toBe("topic not found")
+			})
+	})	
+	test("should return a status code of 404 and message if author is invalid", () => {
+		return request(app)
+			.get("/api/articles?author=billy")
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.message).toBe("author not found")
 			})
 	})
 	test("should return a status code of 404 and message if sortby is invalid", () => {
@@ -267,6 +294,11 @@ describe("PATCH /api/articles/:article_id", () => {
 	test("should return a status code of 400 and message if inc_votes is invalid", () => {
 		const newUpdate = { inc_votes: "notValid" }
 		return request(app).patch("/api/articles/13").send(newUpdate).expect(400)
+	})
+})
+describe("DELETE /api/articles/:article_id", () => {
+	test("should return a status code of 204 and no content", () => {
+		return request(app).delete("/api/articles/10").send().expect(204)
 	})
 })
 

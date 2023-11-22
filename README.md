@@ -1,12 +1,3 @@
-Adding environment variables
-
-This repo requires two files to be created(file contents in brackets):
-
-.env.development    (PGDATABASE=nc_news)
-.env.test           (PGDATABASE=nc_news_test)
-
-
-
 This is the backend repo for NC news project by Georgie-x (August 2023 cohort). This repo holds information on users and articles. This backend repo is hosted at https://georgiex-news.onrender.com
 
 
