@@ -230,10 +230,12 @@ describe("GET /api/articles/:article_id", () => {
 			.expect(200)
 			.then(({ body }) => {
 				expect(body.article).toMatchObject({
+					
 					author: "butter_bridge",
 					title: "Living in the shadow of a great man",
 					article_id: 1,
 					topic: "mitch",
+					body: expect.any(String),
 					created_at: "2020-07-09T20:11:00.000Z",
 					votes: 100,
 					article_img_url:
