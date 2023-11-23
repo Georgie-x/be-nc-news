@@ -17,7 +17,7 @@ const fetchArticleById = async (article_id) => {
 
 const fetchArticles = async (author, topic, sortby, order, limit, p) => {
 console.log(author, topic, sortby, order, limit, p)
-	const validTopic = ['mitch', 'cats', 'cooking', 'coding', 'sports']
+	const validTopic = ['mitch', 'cats', 'cooking', 'coding', 'football']
 	const validAuthor = ['butter_bridge', 'lurker', 'icellusedkars', 'rogersop']
 	const validSortBy = [
 		'author',
