@@ -75,12 +75,16 @@ describe("POST /api/topics", () => {
 })
 
 describe("GET /api/articles", () => {
-	test("should return a status code of 200 and array of articles ordered by created_at", () => {
+	test("should return a status code of 200 and array of articles", () => {
 		return request(app)
-			.get("/api/articles")
+			.get("/api/articles?sortby=votes&order=ASC")
 			.expect(200)
 			.then(({ body }) => {
 				expect(body.articles).toHaveLength(10)
+				console.log(body.articles)
+				expect(body.articles).toBeSortedBy('votes', {
+					descending: false
+				  });
 				body.articles.forEach((article) => {
 					expect(article).toMatchObject({
 						author: expect.any(String),
@@ -96,7 +100,7 @@ describe("GET /api/articles", () => {
 			})
 	})
 
-	test("should return a status code of 200 and array of articles filtered by topic", () => {
+	test("should return a status code of 200 and array of filtered articles when topic query is incuded", () => {
 		return request(app)
 			.get("/api/articles?topic=cats")
 			.expect(200)
@@ -137,7 +141,7 @@ describe("GET /api/articles", () => {
 				})
 			})
 	})
-	test("should return a status code of 200 and filtered array of articles when author query is included", () => {
+	test("should return a status code of 200 and array of filtered articles when author query is included", () => {
 		return request(app)
 			.get("/api/articles?author=rogersop")
 			.expect(200)
@@ -158,9 +162,30 @@ describe("GET /api/articles", () => {
 				})
 			})
 	})
+	test("should return a status code of 200 and array of sorted articles when sortby query is included", () => {
+		return request(app)
+			.get("/api/articles?sortby=votes")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.articles).toHaveLength(10)
+				body.articles.forEach((article) => {
+					expect(article).toMatchObject({
+						author: expect.any(String),
+						title: expect.any(String),
+						article_id: expect.any(Number),
+						topic: expect.any(String),
+						created_at: expect.any(String),
+						votes: expect.any(Number),
+						article_img_url: expect.any(String),
+						comment_count: expect.any(String),
+						total_count: expect.any(String),
+					})
+				})
+			})
+	})
 	test("should return a status code of 404 and message if topic is invalid", () => {
 		return request(app)
-			.get("/api/articles?topic=cast")
+			.get("/api/articles?topic=dandruff")
 			.expect(404)
 			.then(({ body }) => {
 				expect(body.message).toBe("topic not found")
@@ -176,7 +201,7 @@ describe("GET /api/articles", () => {
 	})
 	test("should return a status code of 404 and message if sortby is invalid", () => {
 		return request(app)
-			.get("/api/articles?sortby=cast")
+			.get("/api/articles?sortby=age")
 			.expect(404)
 			.then(({ body }) => {
 				expect(body.message).toBe("sortby not found")
