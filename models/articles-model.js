@@ -48,13 +48,13 @@ const fetchArticles = async (author, topic, sortby, order, limit, p) => {
 	if (p && isNaN(p)) {
 		return Promise.reject({ status: 400, message: "page should be a number" })
 	}
-
+	console.log(order)
 	sortby = sortby || `votes`
 	order = order || `DESC`
 	limit = Number(limit) || 10
 	p = p || 1
-
-	let query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count, COUNT(articles.article_id) AS total_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id`
+console.log(order)
+	let query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, to_char(articles.created_at, 'YYYY-MM-DD HH24:MI:SS') AS formatted_created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count, COUNT(articles.article_id) AS total_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id`
 
 	const values = []
 
@@ -76,7 +76,7 @@ const fetchArticles = async (author, topic, sortby, order, limit, p) => {
 	values.push((p - 1) * limit)
 	console.log(query, values)
 	const body = await db.query(query, values)
-
+	console.log(body.rows)
 	if (body.rows.length === 0) {
 		return Promise.reject({ status: 404, message: "no articles found" })
 	} else {

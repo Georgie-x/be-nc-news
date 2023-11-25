@@ -21,6 +21,7 @@ const getArticleById = async (req, res, next) => {
 const getArticles = async (req, res, next) => {
 	try {
 		const { author, topic, sortby, order, limit, p } = req.query
+		console.log(author, topic, sortby, order, limit, p )
 		const articles = await fetchArticles(author, topic, sortby, order, limit, p)
 		return res.status(200).send({ articles })
 	} catch (err) {

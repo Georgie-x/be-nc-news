@@ -77,13 +77,12 @@ describe("POST /api/topics", () => {
 describe("GET /api/articles", () => {
 	test("should return a status code of 200 and array of articles", () => {
 		return request(app)
-			.get("/api/articles?sortby=votes&order=ASC")
+			.get("/api/articles?sortby=votes&?order=ASC")
 			.expect(200)
 			.then(({ body }) => {
 				expect(body.articles).toHaveLength(10)
-				console.log(body.articles)
 				expect(body.articles).toBeSortedBy('votes', {
-					descending: false
+					descending: true,
 				  });
 				body.articles.forEach((article) => {
 					expect(article).toMatchObject({
@@ -91,7 +90,7 @@ describe("GET /api/articles", () => {
 						title: expect.any(String),
 						article_id: expect.any(Number),
 						topic: expect.any(String),
-						created_at: expect.any(String),
+						formatted_created_at: expect.any(String),
 						votes: expect.any(Number),
 						article_img_url: expect.any(String),
 						comment_count: expect.any(String),
@@ -112,7 +111,7 @@ describe("GET /api/articles", () => {
 						title: expect.any(String),
 						article_id: expect.any(Number),
 						topic: "cats",
-						created_at: expect.any(String),
+						formatted_created_at: expect.any(String),
 						votes: expect.any(Number),
 						article_img_url: expect.any(String),
 						comment_count: expect.any(String),
@@ -132,7 +131,7 @@ describe("GET /api/articles", () => {
 						title: expect.any(String),
 						article_id: expect.any(Number),
 						topic: expect.any(String),
-						created_at: expect.any(String),
+						formatted_created_at: expect.any(String),
 						votes: expect.any(Number),
 						article_img_url: expect.any(String),
 						comment_count: expect.any(String),
@@ -153,7 +152,7 @@ describe("GET /api/articles", () => {
 						title: expect.any(String),
 						article_id: expect.any(Number),
 						topic: expect.any(String),
-						created_at: expect.any(String),
+						formatted_created_at: expect.any(String),
 						votes: expect.any(Number),
 						article_img_url: expect.any(String),
 						comment_count: expect.any(String),
@@ -174,7 +173,7 @@ describe("GET /api/articles", () => {
 						title: expect.any(String),
 						article_id: expect.any(Number),
 						topic: expect.any(String),
-						created_at: expect.any(String),
+						formatted_created_at: expect.any(String),
 						votes: expect.any(Number),
 						article_img_url: expect.any(String),
 						comment_count: expect.any(String),
