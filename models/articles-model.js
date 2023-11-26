@@ -16,6 +16,7 @@ const fetchArticleById = async (article_id) => {
 }
 
 const fetchArticles = async (author, topic, sortby, order, limit, p) => {
+	
 	const validTopic = ["mitch", "cats", "cooking", "coding", "football"]
 	const validAuthor = ["butter_bridge", "lurker", "icellusedkars", "rogersop"]
 	const validSortBy = [
@@ -37,7 +38,7 @@ const fetchArticles = async (author, topic, sortby, order, limit, p) => {
 		return Promise.reject({ status: 404, message: "author not found" })
 	}
 	if (order && !validOrder.includes(order)) {
-		return Promise.reject({ status: 400, message: "order should be desc or asc" })
+		return Promise.reject({ status: 400, message: "order should be DESC or ASC" })
 	}
 	if (sortby && !validSortBy.includes(sortby)) {
 		return Promise.reject({ status: 404, message: "sortby not found" })
@@ -48,13 +49,13 @@ const fetchArticles = async (author, topic, sortby, order, limit, p) => {
 	if (p && isNaN(p)) {
 		return Promise.reject({ status: 400, message: "page should be a number" })
 	}
-	console.log(order)
-	sortby = sortby || `votes`
+
+	sortby = sortby || `formatted_created_at`
 	order = order || `DESC`
 	limit = Number(limit) || 10
 	p = p || 1
-console.log(order)
-	let query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, to_char(articles.created_at, 'YYYY-MM-DD HH24:MI:SS') AS formatted_created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count, COUNT(articles.article_id) AS total_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id`
+	
+	let query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, to_char(articles.created_at, 'YYYY-MM-DD HH24:MI:SS') AS formatted_created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::int AS comment_count, COUNT(articles.article_id)::int AS total_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id`
 
 	const values = []
 
@@ -74,7 +75,7 @@ console.log(order)
 
 	query += ` OFFSET $${values.length + 1}`
 	values.push((p - 1) * limit)
-	console.log(query, values)
+	
 	const body = await db.query(query, values)
 	console.log(body.rows)
 	if (body.rows.length === 0) {

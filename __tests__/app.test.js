@@ -48,7 +48,6 @@ describe("GET /api/topics", () => {
 			})
 	})
 })
-
 describe("POST /api/topics", () => {
 	test("should return a status code of 201 and new topic", () => {
 		const newTopic = { slug: "dinosaurs", description: "the big guys from ages ago" }
@@ -75,13 +74,13 @@ describe("POST /api/topics", () => {
 })
 
 describe("GET /api/articles", () => {
-	test("should return a status code of 200 and array of articles", () => {
+	test("should return a status code of 200 and array of articles ordered by most recent first", () => {
 		return request(app)
-			.get("/api/articles?sortby=votes&?order=ASC")
+			.get("/api/articles")
 			.expect(200)
 			.then(({ body }) => {
 				expect(body.articles).toHaveLength(10)
-				expect(body.articles).toBeSortedBy('votes', {
+				expect(body.articles).toBeSortedBy('formatted_created_at', {
 					descending: true,
 				  });
 				body.articles.forEach((article) => {
@@ -93,7 +92,7 @@ describe("GET /api/articles", () => {
 						formatted_created_at: expect.any(String),
 						votes: expect.any(Number),
 						article_img_url: expect.any(String),
-						comment_count: expect.any(String),
+						comment_count: expect.any(Number),
 					})
 				})
 			})
@@ -114,7 +113,7 @@ describe("GET /api/articles", () => {
 						formatted_created_at: expect.any(String),
 						votes: expect.any(Number),
 						article_img_url: expect.any(String),
-						comment_count: expect.any(String),
+						comment_count: expect.any(Number),
 					})
 				})
 			})
@@ -134,8 +133,8 @@ describe("GET /api/articles", () => {
 						formatted_created_at: expect.any(String),
 						votes: expect.any(Number),
 						article_img_url: expect.any(String),
-						comment_count: expect.any(String),
-						total_count: expect.any(String),
+						comment_count: expect.any(Number),
+						total_count: expect.any(Number),
 					})
 				})
 			})
@@ -155,17 +154,20 @@ describe("GET /api/articles", () => {
 						formatted_created_at: expect.any(String),
 						votes: expect.any(Number),
 						article_img_url: expect.any(String),
-						comment_count: expect.any(String),
-						total_count: expect.any(String),
+						comment_count: expect.any(Number),
+						total_count: expect.any(Number),
 					})
 				})
 			})
 	})
 	test("should return a status code of 200 and array of sorted articles when sortby query is included", () => {
 		return request(app)
-			.get("/api/articles?sortby=votes")
+			.get("/api/articles?sortby=comment_count&order=ASC")
 			.expect(200)
 			.then(({ body }) => {
+				expect(body.articles).toBeSortedBy('comment_count', {
+					descending: false,
+				  });
 				expect(body.articles).toHaveLength(10)
 				body.articles.forEach((article) => {
 					expect(article).toMatchObject({
@@ -176,8 +178,8 @@ describe("GET /api/articles", () => {
 						formatted_created_at: expect.any(String),
 						votes: expect.any(Number),
 						article_img_url: expect.any(String),
-						comment_count: expect.any(String),
-						total_count: expect.any(String),
+						comment_count: expect.any(Number),
+						total_count: expect.any(Number),
 					})
 				})
 			})
@@ -206,16 +208,31 @@ describe("GET /api/articles", () => {
 				expect(body.message).toBe("sortby not found")
 			})
 	})
-	test("should return a status code of 404 and message if order is invalid", () => {
+	test("should return a status code of 400 and message if order is invalid", () => {
 		return request(app)
-			.get("/api/articles?sortby=created_in")
-			.expect(404)
+			.get("/api/articles?order=REVERSE")
+			.expect(400)
 			.then(({ body }) => {
-				expect(body.message).toBe("sortby not found")
+				expect(body.message).toBe("order should be DESC or ASC")
+			})
+	})
+	test("should return a status code of 400 and message if limit is invalid", () => {
+		return request(app)
+			.get("/api/articles?limit=ten")
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.message).toBe("page limit should be a number")
+			})
+	})
+	test("should return a status code of 400 and message if p is invalid", () => {
+		return request(app)
+			.get("/api/articles?p=ten")
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.message).toBe("page should be a number")
 			})
 	})
 })
-
 describe("POST /api/articles", () => {
 	test("should return a status code of 201 and newly posted article", () => {
 		const newArticle = {
@@ -498,7 +515,6 @@ describe("GET /api/users", () => {
 			})
 	})
 })
-
 describe("GET /api/users/:username", () => {
 	test("should return user details ", () => {
 		return request(app)
